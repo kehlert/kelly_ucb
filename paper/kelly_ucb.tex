@@ -91,9 +91,9 @@ In Section \ref{singlearmed}, we review the Kelly bet for the one-armed bandit w
 
 \section{Optimal betting for a single-armed bandit}\label{singlearmed}
 \subsection{Kelly bet for a bandit with a known probability of winning}
-Suppose we are playing a slot machine that allows us to bet any proportion of our wealth. Let $X_n$ be a random variable that takes on only finitely many values in $[-1,\infty)$.  When we pull the arm, we obtain of profit of $X_n$ per unit bet on the $n^\text{th}$ pull. For example, if we bet \$100 and $X_1 = -1$, then we lose our entire bet of \$100. If instead $X_1 = 2$, then we win \$200 (and get back our original bet pf \$100). Let $p_j$, $1\le j \le m$, denote the probability that $X_n$ is equal to $x_j$. Furthermore, assume that $p_j$ is known for every $j$, the $X_n$ are i.i.d., and that $\mathbb{E}[X_1] > 0$. Also assume that $P(X_1 = -1) > 0$.
+Suppose we are playing a slot machine that allows us to bet any proportion of our wealth. Let $X_n$ be a random variable that takes on only finitely many values in $[-1,\infty)$.  When we pull the arm, we obtain of profit of $X_n$ per unit bet on the $n^\text{th}$ pull. For example, if we bet \$100 and $X_1 = -1$, then we lose our entire bet of \$100. If instead $X_1 = 2$, then we win \$200 (and get back our original bet pf \$100). Let $x\in\text{range}(X_1)$ and let $p_x$ denote the $P(X_1 = x)$. Furthermore, assume that $p_x$ is known for every $x$, the $X_n$ are i.i.d., and that $\mathbb{E}[X_1] > 0$. Also assume that $P(X_1 = -1) > 0$.
 
-If we want to maximize our expected gain, then we should bet our entire fortune on every pull, but we would go bankrupt with probability $1$. If we bet a fixed amount, then there is still a positive probability of going bankrupt. Instead we will take a different approach and bet a fixed proportion of our wealth on each pull. Later we will show that this is actually optimal in two senses. \cite{ethier2010doctrine} analyzes the Kelly bet in much more detail and shows that it is optimal in many more ways than we consider here. \cite{ethier2010doctrine} also notes that some of the assumptions on $X_1$ can be relaxed, namely it does not need to be discrete-valued and we can have $P(X_1 = -1) =0$.
+If we want to maximize our expected profit, then we should bet our entire fortune on every pull. However, we would go bankrupt with probability $1$. If instead we bet a fixed amount, then there is still a positive probability of going bankrupt. Instead we will take a different approach and bet a fixed proportion of our wealth on each pull. Betting a proportion of our wealth avoids bankruptcy (although our wealth could become incredibly small), and if we choose the proportion carefully then our bets are optimal in many ways. Next we will derive the ``optimal'' proportional bet, which is called the ``Kelly bet'' or ``Kelly criterion'' \citep{kelly1956new,thorp2006kelly}. \cite{ethier2010doctrine} analyzes the Kelly bet in much more detail and shows that it is optimal in many more ways than we consider here. \cite{ethier2010doctrine} also notes that some of the assumptions on $X_1$ can be relaxed, namely it does not need to be discrete-valued and we can have $P(X_1 = -1) =0$.
 
 Let $W_0$ be our initial wealth, and let $W_n$ is our wealth after pull $n$. Define $f$ as the proportion of our wealth that we bet. Then
 \begin{align}
@@ -104,12 +104,12 @@ Using recursion, we can see that our wealth after pull $n$ is
 \begin{equation}
 W_n = W_0 \prod_{i=1}^n (1+f X_i)
 \end{equation}
-Let $r_n(f) = n^{-1} \log (W_n / W_0)$, then we can trivially rewrite our wealth after pull $n$ as
+Here is another way to write down $W_n$. Let $r_n(f) = n^{-1} \log (W_n / W_0)$, then we can rewrite our wealth after pull $n$ as
 \begin{equation}
 W_n = W_0 e^{r_n(f) n}
 \end{equation}
 We can interpret $r_n$ as the average geometric growth rate of our wealth after pull~$n$. Intuitively, we want to maximize the growth rate of our wealth. That intuition leads to the following lemma, which is based on Lemma 10.1.1 in \cite{ethier2010doctrine}
-\begin{lemma}\label{kelly_asymp_growth}
+\begin{lemma}\label{lemma:kelly_asymp_growth}
 Let $\mu(f) = \mathbb{E}[\log(1+fX_1)]$, which is defined for $f\in[0, 1)$. Then $\lim_{n\to\infty} r_n(f) = \mu(f)$. Let $f^* = \argmax_{0\le f\le 1} \mu(f)$, then $\mu(f^*) > 0$.
 \end{lemma}
 \begin{proof}
@@ -123,9 +123,9 @@ $\mu(f)$ is strictly concave, because
 \end{equation}
 Therefore we can find the global maximum of $\mu(f)$ by just setting its derivative equal to 0. If $P(X_n = 1) = 1-P(X_n=-1)$, then $\mu'(f)$ is straightforward to compute and we find that $\argmax_{0\le f\le 1}\mu(f) = 2p-1$. Furthermore, $\mu'(0) =\mathbb{E}[X] > 0$, and $P(X_1 = -1 > 0)$ implies that $\mu'(1^-) = -\infty$. Therefore $\mu'(f) = 0$ for some $f$. Since $\mu(f)$ is strictly concave, there is a unique $f$ that satisfies $\mu'(f) = 0$ and maximizes $\mu(f)$.. Denote that $f$ as $f^*$. Furthermore, since $\mu(0) = 0$ and $\mu'(0) > 0$, we must have $\mu(f) > 0$ for some small enough $f$ near 0. Consequently, $\mu(f^*) > 0$.
 \end{proof}
-This fixed-proportion betting system is known as the \textit{Kelly bet} or \textit{Kelly criterion} \citep{kelly1956new,thorp2006kelly}. Above we showed that the Kelly bet is optimal in an asymptotic sense, so the natural question to ask is if it is also optimal for finite times. If we wish to maximize the logarithm of our wealth after $n$ pulls, then once again the Kelly bet is optimal.
+Above we showed that the Kelly bet is optimal in an asymptotic sense, so the natural question to ask is if it is also optimal for finite times. If we wish to maximize the logarithm of our wealth after $n$ pulls, then once again the Kelly bet is optimal.
 \begin{lemma}
-$f^*$ maximizes $\mathbb{E}[\log W_n(f)]$.
+$f^*$ is the unique maximizer of $\mathbb{E}[\log W_n(f)]$.
 \end{lemma}
 \begin{proof}
 From the definition of $W_n$ and the linearity of expectations
@@ -133,35 +133,41 @@ From the definition of $W_n$ and the linearity of expectations
 \mathbb{E}[\log W_n(f)] &= \log W_0 + \sum_{i=1}^n \mathbb{E}[\log (1+f X_n)]\\
 &= \log W_0 + n \mu(f)
 \end{align}
-Therefore maximizing the log-wealth is equivalent to maximizing $\mu(f)$. In lemma \ref{kelly_asymp_growth} we showed that $f = 2p-1$ maximizes $\mu(f)$.
+Therefore maximizing the log-wealth is equivalent to maximizing $\mu(f)$. In lemma \ref{lemma:kelly_asymp_growth} we showed that $f^*$ is the unique maximizer of $\mu(f)$.
 \end{proof}
 
-The Kelly bet also approximately maximizes the median wealth. Also, in the long-run it will do better than any other ``essentially different'' strategy, which includes strategies that change betting proportions between pulls. \cite{ethier2010doctrine} provides the details.
+The Kelly bet also approximately maximizes the median wealth. Additionally, in the long-run it will do better than any other ``essentially different'' strategy, which includes strategies that change betting proportions between pulls. \cite{ethier2010doctrine} provides the details.
 
 \subsection{Kelly bet for a bandit with an unknown probability of winning}\label{kelly_unknown_prob}
-A simple approach to estimating the Kelly bet would be to calculate $f^*$ based on estimated values of $\{p_j\}_{j=1}^m$. The obvious estimators are
+A simple approach to estimating the Kelly bet would be to calculate $f^*$ based on estimated values of $\{p_x\}$. The obvious estimators are
 \begin{equation*}
-\bar{p}_j = \frac{1}{n} \sum_{i=1}^n \mathbbm{1}(X_i = x_j),\,1\le j\le m
+\bar{p}_x = \frac{1}{n} \sum_{i=1}^n \mathbbm{1}(X_i = x),\, x\in\text{range}(X_1)
 \end{equation*}
-This approach is not unreasonable, because our wealth would generally grow if $\bar{p}$ is close to to the actual probability of winning $p$. However, we would likely go bankrupt during the first few pulls, since $\bar{p}$ has a relatively high probability of being $\pm 1$. A reasonable idea is to shrink $f_n$ toward zero. \cite{orabona2016coin} show that by using the \cite{krichevsky1981performance} (KT) estimate of $p$, then our bets converge to the Kelly bet while controlling our losses. The KT estimate of $f_n$ essentially shrinks $f_n$ toward 0. The KT estimator of $p$ is
+This approach is not unreasonable, because our wealth would generally grow at a near-optimal rate if $\bar{p}_x$ is a good estimate. A major problem with that strategy is that it is very sensitive to the outcomes of the first few pulls. The probability of going bankrupt could be very high. Instead of using the above estimators of $p_x$, we will use the Krichevsky-Trofimov (KT) estimators. They control our losses while still converging to the Kelly bet as $n\to\infty$. Let $n_i = \sum_{i=1}^n \mathbbm{1}(X_i=x)$ and let $m$ be the cardinality of range$(X_1)$ (by assumption, $m < \infty$). According to \cite{cesa2006prediction}, the KT estimator of $p_x$ is
 \begin{equation}
-\hat{p}_n = \frac{1}{n+1}\left(\frac{1}{2} + \sum_{i=1}^n \mathbbm{1}\{X_i = 1\} \right)
+\hat{p}_x = \frac{1}{n-1+m/2}\left(\frac{1}{2} + n_i\right)
 \end{equation}
-Let $\hat{f}_n=2\hat{p}_n-1$ be our bet on pull $n$, then
+The strong law of large numbers implies that $\lim_{n\to\infty} \hat{p}_x = p_x$. Define
+\begin{equation*}
+\hat{\mu}(f) = \sum_x \log(1+ f x) \hat{p}_x
+\end{equation*}
+After the $n^\text{th}$ pull, the proportion we will bet on the next pull is
+\begin{equation*}
+\hat{f}_{n+1} = \argmax_{0\le f\le 1} \hat{\mu}(f)
+\end{equation*}
+Since $\hat{p}_{-1} > 0$ for any $m$ and $n_i$, the last part of lemma \ref{lemma:kelly_asymp_growth} applies. To be more specific, $\hat{f}_{n+1}$ exists and is unique, and also $\hat{\mu}(\hat{f}_n) > 0$.
+If range$(X_1) = \{-1, 1\}$, then $\hat{f}_n$ has a particularly simple form
 \begin{equation}
-\hat{f}_n = 2\hat{p}_n-1 = \frac{1}{n+1}\sum_{i=1}^n X_i
+\hat{f}_n = 2\hat{p}_1-1 = \frac{1}{n+1}\sum_{i=1}^n X_i
 \end{equation}
-Thus our wealth after pull $n$ is
+Note that $f_1$ is not well-defined, so we will just assume that we get to pull the arm once for free and call the outcome $X_0$. Then $f_1$ is well-defined. Our wealth after pull $n$ is
 \begin{equation}
-W_n = W_0\prod_{i=1}^n 1+f_i X_i
+W_n = W_0\prod_{i=1}^n (1+\hat{f}_i X_i)
 \end{equation}
-Define $f_i$ and $p_i$ such that $f_i = 2p_i - 1$. Also let $Y_i = (1+X_i)/2$, and define the loss $\ell(p_i,Y_i)$ as
-\begin{equation}\label{ell_loss}
-\ell(p_i,Y_i) = -x_i\log p_i - (1-Y_i)\log(1-p_i)
-\end{equation}
-Combining the above definitions leads to the following
+\rule{\textwidth}{2pt}
+Therefore
 \begin{align}
-\log W_n &= \log W_0 + \sum_{i=1}^n \log(1+f_i X_i)\\
+\log W_n &= \log W_0 + \sum_{i=1}^n \log(1+\hat{f}_i X_i)\\
 &= \log W_0 + \sum_{i=1}^n \frac{1+X_i}{2} \log(2 p_i) + \frac{1-X_i}{2}\log(2(1-p_i))\\
 &= \log W_0 + n\log 2 + \sum_{i=1}^n \frac{1+X_i}{2}\log(p_i) + \frac{1-X_i}{2}\log(1-p_i)\\
 &= \log W_0 + n\log 2 - \sum_{i=1}^n \ell(p_i,Y_i)
@@ -256,7 +262,7 @@ We can define strategy $\Phi$ as the sequence $\{I_t,f_{I_t,t}\}$, so \eqref{eq:
 &\le \log W_0 + T\log 2 - T H(p_{i^*})\\
 &= \mathbb{E}[\log W_T(\Phi^*)]
 \end{align}
-The third equality follows from the fact that conditioned on $I_t$, $f_{I_t,t}$ and $X_{I_t,t}$ are independent. The first inequality follows from theorem \ref{kelly_asymp_growth}.
+The third equality follows from the fact that conditioned on $I_t$, $f_{I_t,t}$ and $X_{I_t,t}$ are independent. The first inequality follows from theorem \ref{lemma:kelly_asymp_growth}.
 \end{proof}
 
 \begin{theorem}
