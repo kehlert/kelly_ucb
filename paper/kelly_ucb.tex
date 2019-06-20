@@ -83,17 +83,17 @@ If we are betting on a slot machine, then the natural question to ask is ``how m
 \end{abstract}
 
 \section{Introduction}
-A slot machine is also known as a one-armed bandit, because early slot machines were operated by pulling a lever (arm) attached to their side \citep{onearmedbanditdict}. Suppose that we are pulling an arm with a probability $p$ of winning, where $\nicefrac{1}{2} < p < 1$. Also, we start with a finite amount of money, and we can bet any fraction of our wealth each time we pull the arm. We win an amount equal to our bet with probability $p$, and conversely we lose our bet with probability $1-p$. If $p > 1/2$, then we are likely to gain money by playing the game, but we need to be careful with our betting strategy. If we bet a fraction of our wealth equal to $2p-1$, then this strategy is known as the ``Kelly bet'' \citep{kelly1956new,thorp2006kelly}. In some senses it maximizes our wealth, and it also avoids bankruptcy. In Section \ref{singlearmed}, we briefly discuss the Kelly bet for a slightly generalized situation and prove that it is optimal in a few basic senses.
+A slot machine is also known as a one-armed bandit, because early slot machines were operated by pulling a lever (arm) attached to their side \citep{onearmedbanditdict}. Suppose that we are pulling an arm with a probability $p$ of winning, where $\nicefrac{1}{2} < p < 1$. Also, we start with a finite amount of money, and we can bet any fraction of our wealth each time we pull the arm. We win an amount equal to our bet with probability $p$, and conversely we lose our bet with probability $1-p$. If $p > 1/2$, then we are likely to gain money by playing the game, but we need to be careful with our betting strategy. If we bet a fraction of our wealth equal to $2p-1$, then this strategy is known as the ``Kelly bet'' \citep{kelly1956new,thorp2006kelly}. In some senses it maximizes our wealth, and it also avoids bankruptcy. In many situations, we do not know the probability $p$. We will discuss a version of the Kelly bet for that type of problem.
 
-Now consider a situation where we can choose between many arms. If we pull arm $i$, then we win with probability $p_i$ and lose with probability $1-p_i$. If we are only allowed to bet a fixed amount and we do not know the value of $p_i$ for any $i$, then this is called the stochastic multi-armed bandit problem. There is a trade-off between exploitation and exploration: we want to exploit an arm with a seemingly high probability of winning, but we also want to explore and find the best arm. Here we consider a new version of the stochastic bandit problem. Instead of fixed-size bets, we can bet any fraction of our wealth. The KL-UCB algorithm in \cite{cappe2013kullback} does not address how much to bet, so we plan to extend the KL-UCB algorithm and its analysis to the variable-bet situation. We will also allow for more complicated payoffs than just a win or loss of our entire bet.
+Now consider a situation where we can choose between many arms. If we pull arm $i$, then we win with probability $p_i$ and lose with probability $1-p_i$. If we are only allowed to bet a fixed amount and we do not know the value of $p_i$ for any $i$, then this is called the stochastic multi-armed bandit problem. There is a trade-off between exploitation and exploration: we want to exploit an arm with a seemingly high probability of winning, but we also want to explore and find the best arm. Here we consider a new version of the stochastic bandit problem. Instead of fixed-size bets, we can bet any fraction of our wealth. The KL-UCB algorithm in \cite{cappe2013kullback} does not address how much to bet, so we plan to extend the KL-UCB algorithm and its analysis to the variable-bet situation.
 
 In Section \ref{singlearmed}, we review the Kelly bet for the one-armed bandit with known probabilities. Then we extend the Kelly bet to the situtation where we do not know the probabilities of the possible outcomes. Section \ref{mab} outlines our Kelly-UCB algorithm for playing a variable-bet multi-armed bandit. Then we will present analytic and numerical results on the algorithm's performance.
 
 \section{Optimal betting for a single-armed bandit}\label{singlearmed}
 \subsection{Kelly bet for a bandit with a known probability of winning}
-Suppose we are playing a slot machine that allows us to bet any proportion of our wealth. Let $X_n$ be a random variable that takes on only finitely many values in $[-1,\infty)$.  When we pull the arm, we obtain of profit of $X_n$ per unit bet on the $n^\text{th}$ pull. For example, if we bet \$100 and $X_1 = -1$, then we lose our entire bet of \$100. If instead $X_1 = 2$, then we win \$200 (and get back our original bet pf \$100). Let $x\in\text{range}(X_1)$ and let $p_x$ denote the $P(X_1 = x)$. Furthermore, assume that $p_x$ is known for every $x$, the $X_n$ are i.i.d., and that $\mathbb{E}[X_1] > 0$. Also assume that $P(X_1 = -1) > 0$.
+Suppose we are playing a slot machine that allows us to bet any proportion of our wealth. Let $X_n\in\{-1,1\}$ be a random variable with $P(X_n = 1) = 1-P(X_n=-1) = p$.  When we pull the arm, we obtain of profit of $X_n$ per unit bet on the $n^\text{th}$ pull. If we bet \$100 and $X_1 = -1$, then we lose our entire bet of \$100. If instead $X_1 = 1$, then we win \$100 (and get back our original bet of \$100). Assume that the $X_n$ are i.i.d. for all $n$, and that $p > 1/2$.
 
-If we want to maximize our expected profit, then we should bet our entire fortune on every pull. However, we would go bankrupt with probability $1$. If instead we bet a fixed amount, then there is still a positive probability of going bankrupt. Instead we will take a different approach and bet a fixed proportion of our wealth on each pull. Betting a proportion of our wealth avoids bankruptcy (although our wealth could become incredibly small), and if we choose the proportion carefully then our bets are optimal in many ways. Next we will derive the ``optimal'' proportional bet, which is called the ``Kelly bet'' or ``Kelly criterion'' \citep{kelly1956new,thorp2006kelly}. \cite{ethier2010doctrine} analyzes the Kelly bet in much more detail and shows that it is optimal in many more ways than we consider here. \cite{ethier2010doctrine} also notes that some of the assumptions on $X_1$ can be relaxed, namely it does not need to be discrete-valued and we can have $P(X_1 = -1) =0$.
+If we want to maximize our expected profit, then we should bet our entire fortune on every pull. However, we would go bankrupt with probability $1$. If instead we bet a fixed amount, then there is still a positive probability of going bankrupt. We will take a different approach and bet a fixed proportion of our wealth on each pull. Betting a proportion of our wealth avoids bankruptcy (although our wealth could become incredibly small), and if we choose the proportion carefully then our bets are optimal in many ways. Next we will derive the ``optimal'' proportional bet, which is called the ``Kelly bet'' or ``Kelly criterion'' \citep{kelly1956new,thorp2006kelly}. \cite{ethier2010doctrine} analyzes the Kelly bet in much more detail and shows that it is optimal in many more ways than we consider here. \cite{ethier2010doctrine} also considers more general random variables $X_n$. Our later results rely on $X_n$ being a Bernoulli random variable, so we do not consider the more general case in this section.
 
 Let $W_0$ be our initial wealth, and let $W_n$ is our wealth after pull $n$. Define $f$ as the proportion of our wealth that we bet. Then
 \begin{align}
@@ -110,7 +110,7 @@ W_n = W_0 e^{r_n(f) n}
 \end{equation}
 We can interpret $r_n$ as the average geometric growth rate of our wealth after pull~$n$. Intuitively, we want to maximize the growth rate of our wealth. That intuition leads to the following lemma, which is based on Lemma 10.1.1 in \cite{ethier2010doctrine}
 \begin{lemma}\label{lemma:kelly_asymp_growth}
-Let $\mu(f) = \mathbb{E}[\log(1+fX_1)]$, which is defined for $f\in[0, 1)$. Then $\lim_{n\to\infty} r_n(f) = \mu(f)$. Let $f^* = \argmax_{0\le f\le 1} \mu(f)$, then $\mu(f^*) > 0$.
+Let $\mu(f) = \mathbb{E}[\log(1+fX_1)]$, which is defined for $f\in[0, 1)$. Then $\lim_{n\to\infty} r_n(f) = \mu(f)$. Also, $f^* = \argmax_f \mu(f) = 2p-1$ and $\mu(f^*) = \log(2) - H(p)$, where $H(p)$ is the entropy of the Bernoulli distribution with parameter $p$.
 \end{lemma}
 \begin{proof}
 The strong law of large numbers implies
@@ -119,9 +119,9 @@ The strong law of large numbers implies
 \end{equation}
 $\mu(f)$ is strictly concave, because
 \begin{equation}
-\mu''(f) = -\mathbb{E}\left[\frac{X^2}{(1+fX)^2}\right] < 0
+\mu''(f) = -\mathbb{E}\left[\frac{X^2}{(1+fX)^2}\right] < 0,\, 0 \le f < 1
 \end{equation}
-Therefore we can find the global maximum of $\mu(f)$ by just setting its derivative equal to 0. If $P(X_n = 1) = 1-P(X_n=-1)$, then $\mu'(f)$ is straightforward to compute and we find that $\argmax_{0\le f\le 1}\mu(f) = 2p-1$. Furthermore, $\mu'(0) =\mathbb{E}[X] > 0$, and $P(X_1 = -1 > 0)$ implies that $\mu'(1^-) = -\infty$. Therefore $\mu'(f) = 0$ for some $f$. Since $\mu(f)$ is strictly concave, there is a unique $f$ that satisfies $\mu'(f) = 0$ and maximizes $\mu(f)$.. Denote that $f$ as $f^*$. Furthermore, since $\mu(0) = 0$ and $\mu'(0) > 0$, we must have $\mu(f) > 0$ for some small enough $f$ near 0. Consequently, $\mu(f^*) > 0$.
+Therefore we can find the global maximum of $\mu(f)$ by just setting its derivative equal to 0. We find that $f^* = \argmax_{0\le f\le 1}\mu(f) = 2p-1$. Computing $\mu(2p-1)$ almost immediately gives the last result.
 \end{proof}
 Above we showed that the Kelly bet is optimal in an asymptotic sense, so the natural question to ask is if it is also optimal for finite times. If we wish to maximize the logarithm of our wealth after $n$ pulls, then once again the Kelly bet is optimal.
 \begin{lemma}
@@ -139,64 +139,72 @@ Therefore maximizing the log-wealth is equivalent to maximizing $\mu(f)$. In lem
 The Kelly bet also approximately maximizes the median wealth. Additionally, in the long-run it will do better than any other ``essentially different'' strategy, which includes strategies that change betting proportions between pulls. \cite{ethier2010doctrine} provides the details.
 
 \subsection{Kelly bet for a bandit with an unknown probability of winning}\label{kelly_unknown_prob}
-A simple approach to estimating the Kelly bet would be to calculate $f^*$ based on estimated values of $\{p_x\}$. The obvious estimators are
+A simple approach to estimating the Kelly bet would be to calculate $f^*$ based on an estimated value of $p$. The obvious estimator is
 \begin{equation*}
-\bar{p}_x = \frac{1}{n} \sum_{i=1}^n \mathbbm{1}(X_i = x),\, x\in\text{range}(X_1)
+\bar{p}_n = \frac{n_1}{n}
 \end{equation*}
-This approach is not unreasonable, because our wealth would generally grow at a near-optimal rate if $\bar{p}_x$ is a good estimate. A major problem with that strategy is that it is very sensitive to the outcomes of the first few pulls. The probability of going bankrupt could be very high. Instead of using the above estimators of $p_x$, we will use the Krichevsky-Trofimov (KT) estimators. They control our losses while still converging to the Kelly bet as $n\to\infty$. Let $n_i = \sum_{i=1}^n \mathbbm{1}(X_i=x)$ and let $m$ be the cardinality of range$(X_1)$ (by assumption, $m < \infty$). According to \cite{cesa2006prediction}, the KT estimator of $p_x$ is
+where $n_1 = \sum_{i=1}^n \mathbbm{1}(X_i=1)$. then we could let $\hat{f}_n = 2\bar{p}_n - 1$. This approach is somewhat reasonable, because our wealth would grow at a near-optimal rate if $\bar{p}$ is a good estimate. A major problem with the strategy is that it is very sensitive to the outcomes of the first few pulls. The probability of incurring major losses or even going bankrupt could be very high. Instead of using the above estimator of $p$, we will use the Krichevsky-Trofimov (KT) estimator. Essentially, it controls our losses while still converging to the Kelly bet as n goes to infinity. According to \cite{cesa2006prediction}, the KT estimator of $p$ is
 \begin{equation}
-\hat{p}_x = \frac{1}{n-1+m/2}\left(\frac{1}{2} + n_i\right)
+\hat{p}_n = \frac{n_1+1/2}{n+1}
 \end{equation}
-The strong law of large numbers implies that $\lim_{n\to\infty} \hat{p}_x = p_x$. Define
-\begin{equation*}
-\hat{\mu}(f) = \sum_x \log(1+ f x) \hat{p}_x
-\end{equation*}
-After the $n^\text{th}$ pull, the proportion we will bet on the next pull is
-\begin{equation*}
-\hat{f}_{n+1} = \argmax_{0\le f\le 1} \hat{\mu}(f)
-\end{equation*}
-Since $\hat{p}_{-1} > 0$ for any $m$ and $n_i$, the last part of lemma \ref{lemma:kelly_asymp_growth} applies. To be more specific, $\hat{f}_{n+1}$ exists and is unique, and also $\hat{\mu}(\hat{f}_n) > 0$.
-If range$(X_1) = \{-1, 1\}$, then $\hat{f}_n$ has a particularly simple form
-\begin{equation}
-\hat{f}_n = 2\hat{p}_1-1 = \frac{1}{n+1}\sum_{i=1}^n X_i
-\end{equation}
-Note that $f_1$ is not well-defined, so we will just assume that we get to pull the arm once for free and call the outcome $X_0$. Then $f_1$ is well-defined. Our wealth after pull $n$ is
-\begin{equation}
+The strong law of large numbers implies that $\lim_{n\to\infty} \hat{p}_n = p$. Define $\hat{f}_n = 2\hat{p}_n - 1$, which is the proportion that we will bet on next pull. Note that $f_1$ is not well-defined, so we will just assume that we get to pull the arm once for free and call the outcome $X_0$. Then $\hat{p}_1$ and $f_1$ are well-defined. Our wealth after pull $n$ is
+\begin{equation}\label{eq:total_wealth}
 W_n = W_0\prod_{i=1}^n (1+\hat{f}_i X_i)
 \end{equation}
-\rule{\textwidth}{2pt}
-Therefore
+Let $Y_i = (1+X_i)/2$, $f_i = 2p_i-1$, and define the loss $\ell(p,Y)$ as
+\begin{equation}\label{ell_loss}
+\ell(p,Y) = -Y\log p - (1-Y)\log(1-p)
+\end{equation}
+Take the logarithm of both sides of \ref{eq:total_wealth} to get
 \begin{align}
-\log W_n &= \log W_0 + \sum_{i=1}^n \log(1+\hat{f}_i X_i)\\
+\log W_n &= \log W_0 + \sum_{i=1}^n \log(1+f_i X_i)\\
 &= \log W_0 + \sum_{i=1}^n \frac{1+X_i}{2} \log(2 p_i) + \frac{1-X_i}{2}\log(2(1-p_i))\\
 &= \log W_0 + n\log 2 + \sum_{i=1}^n \frac{1+X_i}{2}\log(p_i) + \frac{1-X_i}{2}\log(1-p_i)\\
 &= \log W_0 + n\log 2 - \sum_{i=1}^n \ell(p_i,Y_i)
 \end{align}
-Since the above holds for any choice of $p_i$, in particular it holds for $p_i=p,\hat{p}_n$. Let $W_n^*$ be our wealth from using the Kelly bet ,and let $W_n^\circ$ be our wealth using $\hat{p}_i$, where the $\hat{p}_i$ are $\sigma(X_1,X_2,\ldots,X_{i-1})$ measurable. Define the regret $R_n$ as
+The bove holds for any choice of $p_i$, in particular it holds for $p_i=p$ and $p_i=\hat{p}_i$. Let $W_n^*$ be our wealth from using the Kelly bet, and let $W_n^\circ$ be our wealth using the bet $\hat{f}_n = \hat{p}_n$. Define the regret $R_n$ as
 \begin{equation}
 R_n = \log W_n^* - \log W_n^\circ = \sum_{i=1}^n \ell(\hat{p}_i,Y_i) - \ell(p,Y_i)
 \end{equation}
-
-Let $n_1 = \sum_{i=1}^n \mathbbm{1}\{X_i=1\}$, then according to \cite{cesa2006prediction} the KT estimator satisfies
+According to \cite{cesa2006prediction} the KT estimator satisfies
 \begin{equation}
+\sum_{i=1}^n \ell(\hat{p}_i,Y_i) = \log\left[ \frac{1}{\pi} \text{Beta}(n_1+1/2, n-n_1+1/2) \right]
+\end{equation}
+If $p_i = p$, then
+\begin{equation}
+\sum_{i=1}^n \ell(p,Y_i) = \log\left[p^{n_1}(1-p)^{n-n_1}\right]
+\end{equation}
+Therefore
+\begin{equation}\label{eq:exact_regret_single_arm}
 R_n = \log\frac{\pi p^{n_1}(1-p)^{n-n_1}}{\text{Beta}(n_1+\nicefrac{1}{2}, n-n_1 + \nicefrac{1}{2})}
 \end{equation}
 The right-hand side of the above expression attains its maximum at $n_1 = np$. Therefore we have the following bound
-\begin{equation}
+\begin{equation}\label{kt_regret_bound}
 R_n \le -nH(p) -\log \text{Beta}(np+\nicefrac{1}{2}, n(1-p)+\nicefrac{1}{2}) + \log(\pi)
 \end{equation}
-If $np$ is an integer, then the bound is sharp. We can use Stirling's formula to approximate the beta function, which gives
-\begin{align}\label{kt_regret_bound}
-R_n &\le -nH(p) -\log \text{Beta}(np+\nicefrac{1}{2}, n(1-p)+\nicefrac{1}{2}) + \log(\pi)\\
-&\sim \frac{1}{2}\log(n+1) + \frac{1}{2}\log(\pi/2) + o(1)\label{asymp_regret_bound}
+$H(p)$ is the entropy of a Bernoulli distribution with parameter $p$. If $np$ is an integer, then the bound is sharp. \textcolor{red}{Suppose $0 < p < 1$}, then we can use Stirling's formula to approximate the beta function as $n\to\infty$. Substitute $n_1=np$ into equation \ref{eq:exact_regret_single_arm} to get
+\begin{align}
+R_n &\le \log\left[\frac{\pi p^{np}(1-p)^{n(1-p)}}{\text{Beta}(np+\nicefrac{1}{2}, n(1-p) + \nicefrac{1}{2})}\right]\\
+&\sim \log \left[\frac{\pi p^{np} (1-p)^{n(1-p)}}{\sqrt{2\pi}(np+1/2)^{np} (n(1-p)+1/2)^{n(1-p)}} (n+1)^{n+1/2} \right]\\
+&=\log\left[\sqrt{\pi/2} (n+1)^{1/2} \left(1+\frac{1}{n}\right)^n \left(1+\frac{1}{2np}\right)^{-np}\left(1+\frac{1}{2n(1-p)} \right)^{-n(1-p)}\right]\\
+&\sim \log\left[\sqrt{\pi/2} (n+1)^{1/2} e e^{-1/2} e^{-1/2}\right]\\
+&= \frac{1}{2}\log(n+1) + \frac{1}{2}\log(\pi/2)\label{asymp_regret_bound}
 \end{align}
-
+If $p=0$, then
+\begin{align}
+R_n &\le \log\left[\frac{\pi}{\text{Beta}(\nicefrac{1}{2}, n + \nicefrac{1}{2})}\right]\\
+&\sim \frac{1}{2}\log(n+1/2) + \frac{1}{2}\log(\pi)
+\end{align}
+If $p=1$, we get the same answer.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{single_arm_kt_regret.png}
+\includegraphics[width=1\textwidth]{single_arm_kt_regret.png}
 \caption{Comparison of regret paths to the KT regret bound for $p=0.55$. The bold black curve on top is the regret bound $-nH(p) -\log \text{Beta}(np+\nicefrac{1}{2}, n(1-p)+\nicefrac{1}{2}) + \log(\pi)$ from \eqref{kt_regret_bound}. The dashed black curve is the asymptotic bound \eqref{asymp_regret_bound}. The others plots are the regrets of ten different paths.}
 \label{single_arm_regret_figure}
 \end{figure}
+
+In the above analysis, we left out a subtle point. If $X_n$ is often equal to -1, then we could have $\hat{f}_n < 0$. The analysis still holds, but this only makes sense if we are allowed to ``short'' the arms. In other words, we can bet that we will see $X_n=-1$. If this is not possible due to the circumstances of the game, then it seems reasonable that we should either not bet at all or place a minimum bet.
+
 
 \section{Kelly-UCB algorithm for a multi-armed bandit}\label{mab}
 In this section, we consider a situation where we have a choice between many different arms. If we pull arm $i$, then we win with probability $p_i$ and lose with probability $1-p_i$. If we are only allowed to bet a fixed amount and we do not know the value of $p_i$ for any $i$, then this is called the stochastic multi-armed bandit problem. There is a trade-off between exploitation and exploration: we want to exploit an arm with a seemingly high probability of winning, but we also want to explore and find the best arm.
@@ -274,7 +282,6 @@ Then for all $T\ge 0$
 \begin{equation}
 \mathbb{E}[R_T] \le \frac{1}{2}\log(T+1) + \sum_{i=1}^K \left[\frac{\Delta_i\log T}{\text{kl}_i}(1+o(1)) + \frac{1}{2} \log\left(\frac{\log T}{\text{kl}_i} + 1\right) \right] + \frac{K}{2} \log(\pi/2) 
 \end{equation}
-\textcolor{red}{TODO proofread, and check all the little-oh terms}
 \end{theorem}
 \begin{proof}
 Continuing from \eqref{eq:regret_def} and using theorem \ref{thm:kelly_optimal_mab} leads to
